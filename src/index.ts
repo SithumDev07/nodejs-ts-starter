@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { ApiError } from './errors/apiError';
 import { asyncWrapper } from './components/async-wrapper';
 import { NotFoundError } from './errors/notFoundError';
+import { StatusCodes } from 'http-status-codes';
 
 const configuration: any = dotenv.config().parsed;
 
@@ -39,7 +40,7 @@ app.post('/post', async (req: Request, res: Response): Promise<Response> => {
 app.get(
   '/protected',
   asyncWrapper(async (req: Request, res: Response) => {
-    throw new ApiError(401, 'You are not authorized');
+    throw new ApiError(StatusCodes.UNAUTHORIZED, 'You are not authorized');
   }),
 );
 
@@ -57,3 +58,9 @@ try {
 } catch (err: any) {
   console.error(`Error occured: ${err.message}`);
 }
+
+process.on('uncaughtException', (error: Error) => {
+  console.log(error.name, error.message);
+  console.log('Uncaught Exception, Shutting Down...');
+  process.exit(1);
+});
