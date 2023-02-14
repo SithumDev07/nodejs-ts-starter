@@ -1,30 +1,35 @@
-import express, {Application, Request, Response} from "express";
-import bodyParser from "body-parser";
+import express, { Application, Request, Response } from 'express';
+import bodyParser from 'body-parser';
+import config from './config';
 
-const app: Application = express()
+import dotenv from 'dotenv';
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+const configuration: any = dotenv.config().parsed;
 
-app.get("/", async (req: Request, res: Response): Promise<Response> => {
-    return res.status(200).send({
-        message: "Hello TS"
-    })
-})
+const app: Application = express();
 
-app.post("/post", async (req: Request, res: Response):Promise<Response> => {
-    console.log(req.body)
-    return res.status(200).send({
-        message: "Hey from POST Request"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    })
-})
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-const PORT = 5005;
+app.get('/', async (req: Request, res: Response): Promise<Response> => {
+  return res.status(200).send({
+    message: 'Hello TS',
+  });
+});
+
+app.post('/post', async (req: Request, res: Response): Promise<Response> => {
+  console.log(req.body);
+  return res.status(200).send({
+    message: 'Hey from POST Request',
+  });
+});
+
+const PORT = config.port || 4000;
 
 try {
-    app.listen(PORT, (): void => {
-        console.log(`Server Connected Successfully on PORT -> ${PORT}`)
-    })
+  app.listen(PORT, (): void => {
+    console.log(`Server Connected Successfully on PORT -> ${PORT}`);
+  });
 } catch (err: any) {
-    console.error( `Error occured: ${err.message}`)
+  console.error(`Error occured: ${err.message}`);
 }
