@@ -7,6 +7,7 @@ import { ApiError } from './errors/apiError';
 import { asyncWrapper } from './components/async-wrapper';
 import { NotFoundError } from './errors/notFoundError';
 import { StatusCodes } from 'http-status-codes';
+import ErrorHandler from './errors/error-handler';
 
 const configuration: any = dotenv.config().parsed;
 
@@ -14,6 +15,8 @@ const app: Application = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(ErrorHandler.handle());
 
 app.use((error: ApiError, req: Request, res: Response, next: NextFunction) => {
   const statusCode = error.statusCode || 500;
@@ -63,4 +66,11 @@ process.on('uncaughtException', (error: Error) => {
   console.log(error.name, error.message);
   console.log('Uncaught Exception, Shutting Down...');
   process.exit(1);
+});
+
+process.on('unhandledRejection', (reason: Error, promise: Promise<any>) => {
+  console.log(reason.name, reason.message);
+  console.log('UNHANDLED REJECTION, Shutting Down...');
+  process.exit(1);
+  throw reason;
 });
